@@ -35,7 +35,7 @@ getContainerBindMounts() {
   local -n _binds="$1"
   local containerId="$2"
   local bind
-  docker container inspect --format '{{range .Mounts}}{{if eq .Type "bind"}}{{printf "%s:%s:%s\n" .Source .Destination (or (and .RW "rw") "ro")}}{{end}}{{end}}' |
+  docker container inspect --format '{{range .Mounts}}{{if eq .Type "bind"}}{{printf "%s:%s:%s\n" .Source .Destination (or (and .RW "rw") "ro")}}{{end}}{{end}}' "$containerId" |
     head -n -1 |
     while IFS= read -r bind; do
       _binds+=("$bind")
