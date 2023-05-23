@@ -34,13 +34,15 @@ args=(-ti --rm --privileged --network="container:$containerId" --name "swarm-din
 vars=()
 getContainerEnv vars "$containerId"
 for var in "${vars[@]}"; do
-  args+=(-e "$var")
+  if [[ "$var" != "" ]]; then
+    args+=(-e "$var")
+  fi
 done
 
 labels=()
 getContainerLabels labels "$containerId"
 for label in "${labels[@]}"; do
-  if [[ "$label" = com.docker.stack.* ]] || [[ "$label" = com.docker.swarm.* ]]; then
+  if [[ "$label" == com.docker.stack.* ]] || [[ "$label" == com.docker.swarm.* ]]; then
     args+=(-l "$label")
   fi
 done
