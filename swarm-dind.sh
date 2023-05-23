@@ -49,7 +49,7 @@ fi
 
 containerId="$(getCurrentContainerId)"
 
-args=(-ti --rm --privileged --network="container:$containerId" --name "swarm-dind-$containerId")
+args=(-i --sig-proxy --rm --privileged --network="container:$containerId" --name "swarm-dind-$containerId")
 
 vars=()
 getContainerEnv vars "$containerId"
