@@ -13,7 +13,7 @@ getContainerEnv() {
   local containerId="$2"
   while IFS= read -r var; do
     vars+=("$(echo "$var" | gojq -r)")
-  done <(
+  done < <(
     docker container inspect --format '{{range .Config.Env}}{{println (json .)}}{{end}}' "$containerId"
   )
 }
@@ -23,7 +23,7 @@ getContainerLabels() {
   local containerId="$2"
   while IFS= read -r label; do
     labels+=("$(echo "$label" | gojq -r)")
-  done <(
+  done < <(
     docker container inspect --format '{{range $k,$v:=.Config.Labels}}{{println (json (printf "%s=%s" $k $v))}}{{end}}' "$containerId"
   )
 }
