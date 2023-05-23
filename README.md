@@ -5,6 +5,8 @@
 
 docker-in-docker on docker swarm.
 
+Inspired by https://github.com/sourcelair/swarm-dind-operator
+
 ## Docker images
 
 https://github.com/users/lhns/packages/container/package/swarm-dind
