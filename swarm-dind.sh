@@ -72,4 +72,5 @@ done
 
 args+=("$@")
 
+echo docker run "${args[@]}"
 exec docker run "${args[@]}"
