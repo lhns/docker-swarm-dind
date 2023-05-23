@@ -20,14 +20,14 @@ getContainerEnv() {
     done
 }
 
-getContainerBindMounts() {
-  local -n _binds="$1"
+getContainerMounts() {
+  local -n _mounts="$1"
   local containerId="$2"
-  local bind
-  docker container inspect --format '{{range .Mounts}}{{if eq .Type "bind"}}{{printf "%s:%s:%s\n" .Source .Destination (or (and .RW "rw") "ro")}}{{end}}{{end}}' "$containerId" |
+  local mount
+  docker container inspect --format '{{range .Mounts}}{{printf "%s:%s:%s\n" .Source .Destination (or (and .RW "rw") "ro")}}{{end}}' "$containerId" |
     head -n -1 |
-    while IFS= read -r bind; do
-      _binds+=("$bind")
+    while IFS= read -r mount; do
+      _mounts+=("$mount")
     done
 }
 
@@ -48,11 +48,11 @@ for var in "${vars[@]}"; do
   fi
 done
 
-binds=()
-getContainerBindMounts binds "$containerId"
-for bind in "${binds[@]}"; do
-  if [[ "$bind" != *:/var/run/docker.sock:* ]]; then
-    args+=(-v "$bind")
+mounts=()
+getContainerMounts mounts "$containerId"
+for mount in "${mounts[@]}"; do
+  if [[ "$mount" != *:/var/run/docker.sock:* ]]; then
+    args+=(-v "$mount")
   fi
 done
 
