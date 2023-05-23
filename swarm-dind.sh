@@ -42,6 +42,11 @@ getContainerBindMounts() {
     done
 }
 
+if [[ "$1" == "" ]]; then
+  echo "No dind image specified" >&2
+  false
+fi
+
 containerId="$(getCurrentContainerId)"
 
 args=(-ti --rm --privileged --network="container:$containerId" --name "swarm-dind-$containerId")
@@ -72,5 +77,4 @@ done
 
 args+=("$@")
 
-echo docker run "${args[@]}"
 exec docker run "${args[@]}"

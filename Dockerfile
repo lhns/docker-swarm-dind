@@ -31,4 +31,4 @@ RUN apt-get update \
 
 COPY swarm-dind.sh /
 
-ENTRYPOINT /swarm-dind.sh
+ENTRYPOINT ["/swarm-dind.sh"]
