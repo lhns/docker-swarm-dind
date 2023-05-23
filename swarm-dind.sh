@@ -20,17 +20,6 @@ getContainerEnv() {
     done
 }
 
-getContainerLabels() {
-  local -n _labels="$1"
-  local containerId="$2"
-  local label
-  docker container inspect --format '{{range $k,$v:=.Config.Labels}}{{println (json (printf "%s=%s" $k $v))}}{{end}}' "$containerId" |
-    head -n -1 |
-    while IFS= read -r label; do
-      _labels+=("$(echo "$label" | jq -r)")
-    done
-}
-
 getContainerBindMounts() {
   local -n _binds="$1"
   local containerId="$2"
@@ -43,7 +32,7 @@ getContainerBindMounts() {
 }
 
 if [[ "$1" == "" ]]; then
-  echo "No dind image specified" >&2
+  echo "No dind image specified!" >&2
   false
 fi
 
@@ -56,14 +45,6 @@ getContainerEnv vars "$containerId"
 for var in "${vars[@]}"; do
   if [[ "$var" != "" ]] && [[ "$var" != DOCKER_HOST=* ]]; then
     args+=(-e "$var")
-  fi
-done
-
-labels=()
-getContainerLabels labels "$containerId"
-for label in "${labels[@]}"; do
-  if [[ "$label" == com.docker.stack.* ]] || [[ "$label" == com.docker.swarm.* ]]; then
-    args+=(-l "$label")
   fi
 done
 
