@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -eo pipefail
+shopt -s lastpipe
 
 getCurrentContainerId() {
   local cpuset
@@ -11,26 +12,24 @@ getCurrentContainerId() {
 getContainerEnv() {
   local -n _vars="$1"
   local containerId="$2"
-  while IFS= read -r var; do
-    _vars+=("$(echo "$var" | jq -r)")
-  done < <(
-    docker container inspect --format '{{range .Config.Env}}{{println (json .)}}{{end}}' "$containerId"
-  )
+  docker container inspect --format '{{range .Config.Env}}{{println (json .)}}{{end}}' "$containerId" |
+    while IFS= read -r var; do
+      _vars+=("$(echo "$var" | jq -r)")
+    done
 }
 
 getContainerLabels() {
   local -n _labels="$1"
   local containerId="$2"
-  while IFS= read -r label; do
-    _labels+=("$(echo "$label" | jq -r)")
-  done < <(
-    docker container inspect --format '{{range $k,$v:=.Config.Labels}}{{println (json (printf "%s=%s" $k $v))}}{{end}}' "$containerId"
-  )
+  docker container inspect --format '{{range $k,$v:=.Config.Labels}}{{println (json (printf "%s=%s" $k $v))}}{{end}}' "$containerId" |
+    while IFS= read -r label; do
+      _labels+=("$(echo "$label" | jq -r)")
+    done
 }
 
 containerId="$(getCurrentContainerId)"
 
-args=(--ti --rm --privileged --network="container:$containerId")
+args=(-ti --rm --privileged --network="container:$containerId" --name "swarm-dind-$containerId")
 
 vars=()
 getContainerEnv vars "$containerId"
