@@ -4,9 +4,7 @@ set -eo pipefail
 shopt -s lastpipe
 
 getCurrentContainerId() {
-  local cpuset
-  cpuset="$(cat /proc/self/cpuset)"
-  echo "${cpuset#/docker/}"
+  cat /proc/self/mountinfo | grep "/docker/containers/" | head -1 | sed -E 's/.*?\/docker\/containers\/([^/]*?).*/\1/'
 }
 
 getContainerEnv() {
